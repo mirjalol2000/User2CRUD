@@ -1,9 +1,10 @@
-﻿using User2CRUD.Models.Users;
+﻿using System.Threading.Tasks;
+using User2CRUD.Models.Users;
 
 namespace User2CRUD.Brokers.Storages
 {
     public interface IStorageBroker
     {
-        User InsertUser(User user);
+        ValueTask<User> InsertUserAsync(User user);
     }
 }
