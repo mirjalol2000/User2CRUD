@@ -23,7 +23,7 @@ namespace User2CRUD.Brokers.Storages
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            string connectionString = "Data Source : User2CRUD.db";
+            string connectionString = "Data Source = User2CRUD.db";
             optionsBuilder.UseSqlite(connectionString);
         }
     }
