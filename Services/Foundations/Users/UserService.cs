@@ -1,4 +1,5 @@
-﻿using User2CRUD.Brokers.Storages;
+﻿using System.Threading.Tasks;
+using User2CRUD.Brokers.Storages;
 using User2CRUD.Models.Users;
 
 namespace User2CRUD.Services.Foundations.Users
@@ -12,8 +13,8 @@ namespace User2CRUD.Services.Foundations.Users
             this.storageBroker = storageBroker;
         }
 
-        public User AddUser(User user)=>
-            this.storageBroker.InsertUser(user);
+        public async ValueTask<User> AddUserAsync(User user)=>
+            await this.storageBroker.InsertUserAsync(user);
         
     }
 }

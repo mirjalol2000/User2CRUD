@@ -1,5 +1,6 @@
 ﻿using EFxceptions;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 using User2CRUD.Models.Users;
 
 namespace User2CRUD.Brokers.Storages
@@ -13,10 +14,10 @@ namespace User2CRUD.Brokers.Storages
         
 
 
-        public User InsertUser(User user)
+        public async ValueTask<User> InsertUserAsync(User user)
         {
-            this.Users.Add(user);
-            this.SaveChanges(); 
+            await this.Users.AddAsync(user);
+            await this.SaveChangesAsync(); 
 
             return user;    
         }
