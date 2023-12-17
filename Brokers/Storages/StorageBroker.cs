@@ -1,5 +1,6 @@
 ﻿using EFxceptions;
 using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,50 +8,59 @@ using User2CRUD.Models.Users;
 
 namespace User2CRUD.Brokers.Storages
 {
-    public class StorageBroker : EFxceptionsContext, IStorageBroker
+    public partial class StorageBroker : EFxceptionsContext, IStorageBroker
     {
-        public DbSet<User> Users { get; set; }
 
-        public StorageBroker()=>
-            this.Database.EnsureCreated();        
-        
+        public StorageBroker() =>
+            this.Database.EnsureCreated();
 
-
-        public async ValueTask<User> InsertUserAsync(User user)
+        public async ValueTask<T> InsertAsync<T> (T @object)
         {
-            await this.Users.AddAsync(user);
-            await this.SaveChangesAsync(); 
-
-            return user;    
-        }
-
-        public async ValueTask<User> SelectUserByIdAsync(Guid userId)=>
-            await this.Users.FirstOrDefaultAsync(u => u.Id == userId);
-
-        public IQueryable<User> SelectAllUsers()=>
-         this.Users.AsQueryable();
-
-        public async ValueTask<User> UpdateUserAsync(User updatedUser)
-        {
-            var user = this.Users.Find(updatedUser.Id);
-            this.Entry(user).CurrentValues.SetValues(updatedUser);
-
+            var broker = new StorageBroker();
+            broker.Entry(@object).State = EntityState.Added;
             await this.SaveChangesAsync();
 
-            return updatedUser;
+            return @object;
         }
 
-        public async ValueTask<User> DeleteUserAsync(User user)
+        public IQueryable<T> SelectAll<T>() where T : class
         {
-            this.Users.Remove(user);
+            var broker = new StorageBroker();
+
+            return broker.Set<T>();
+        }
+
+        public async ValueTask<T> SelectAsync<T>(params object[] objectId) where T : class
+        {
+            var broker = new StorageBroker();
+
+            return await broker.FindAsync<T>(objectId);
+        }
+
+        public async ValueTask<T> UpdateAsync<T>(T @object)
+        {
+            var broker = new StorageBroker();
+            broker.Entry(@object).State = EntityState.Modified;
             await this.SaveChangesAsync();
 
-            return user;
+            return (@object);
         }
+
+        public async ValueTask<T> DeleteAsync<T>(T @object)
+        {
+            var broker = new StorageBroker();
+            broker.Entry("@object").State = EntityState.Deleted;
+            await this.SaveChangesAsync();  
+
+            return @object;
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string connectionString = "Data Source = User2CRUD.db";
             optionsBuilder.UseSqlite(connectionString);
         }
+
+        
     }
 }
